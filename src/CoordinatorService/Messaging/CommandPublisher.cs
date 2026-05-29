@@ -21,11 +21,6 @@ public sealed class CommandPublisher : IAsyncDisposable
         _logger = logger;
     }
 
-    public static CommandPublisher FromAccessor(CommandPublisherAccessor accessor)
-        => accessor.Publisher
-           ?? throw new InvalidOperationException(
-               "CommandPublisher has not been initialized yet.");
-
     public static async Task<CommandPublisher> CreateAsync(
         RabbitMqConnectionFactory factory,
         ILogger<CommandPublisher> logger)
