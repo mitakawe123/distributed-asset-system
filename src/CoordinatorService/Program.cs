@@ -1,7 +1,9 @@
 using CoordinatorService;
+using CoordinatorService.Jobs;
 using CoordinatorService.Messaging;
 using CoordinatorService.Registry;
 using CoordinatorService.Workers;
+using Quartz;
 using Shared.Contracts.Extensions;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -20,7 +22,7 @@ var opts = builder.Configuration
     .GetSection(CoordinatorOptions.SectionName)
     .Get<CoordinatorOptions>()!;
 
-builder.Services.AddQ(q =>
+builder.Services.AddQuartz(q =>
 {
     q.AddJob<CalibrateAllAssetsJob>(j => j.WithIdentity("calibrate-all"));
     q.AddTrigger(t => t
