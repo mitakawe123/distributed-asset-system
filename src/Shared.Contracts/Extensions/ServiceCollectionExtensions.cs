@@ -10,8 +10,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<RabbitMqOptions>(_ =>
-            configuration.GetSection(RabbitMqOptions.SectionName));
+        services.AddOptions<RabbitMqOptions>()
+            .Bind(configuration.GetSection(RabbitMqOptions.SectionName));
 
         services.AddSingleton<RabbitMqConnectionFactory>();
 

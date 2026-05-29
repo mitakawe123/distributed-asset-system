@@ -20,7 +20,7 @@ services:
     image: postgres:18
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "5434:5432"
     environment:
       POSTGRES_DB: assets
       POSTGRES_USER: postgres
@@ -31,11 +31,11 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
 
   ingestion-service:
     build:
-      context: .
+      context: ./src
       dockerfile: IngestionService/Dockerfile
     container_name: ingestion-service
     depends_on:
@@ -51,7 +51,7 @@ services:
 
   coordinator-service:
     build:
-      context: .
+      context: ./src
       dockerfile: CoordinatorService/Dockerfile
     container_name: coordinator-service
     depends_on:
@@ -70,7 +70,7 @@ services:
 
   asset-001:
     build:
-      context: .
+      context: ./src
       dockerfile: AssetService/Dockerfile
     container_name: asset-001
     depends_on:
@@ -85,7 +85,7 @@ services:
 
   asset-002:
     build:
-      context: .
+      context: ./src
       dockerfile: AssetService/Dockerfile
     container_name: asset-002
     depends_on:
@@ -100,7 +100,7 @@ services:
 
   asset-003:
     build:
-      context: .
+      context: ./src
       dockerfile: AssetService/Dockerfile
     container_name: asset-003
     depends_on:
