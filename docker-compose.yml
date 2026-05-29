@@ -1,11 +1,10 @@
 services:
-
   rabbitmq:
     image: rabbitmq:4-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"    # AMQP
-      - "15672:15672"  # management UI → http://localhost:15672
+      - "5672:5672" # AMQP
+      - "15672:15672" # management UI → http://localhost:15672
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -18,13 +17,13 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   postgres:
-    image: postgres:17
+    image: postgres:18
     container_name: postgres
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB:       assets
-      POSTGRES_USER:     postgres
+      POSTGRES_DB: assets
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -45,10 +44,10 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      RabbitMq__Host:                    rabbitmq
-      RabbitMq__Username:                guest
-      RabbitMq__Password:                guest
-      Database__ConnectionString:        "Host=postgres;Port=5432;Database=assets;Username=postgres;Password=postgres"
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Database__ConnectionString: "Host=postgres;Port=5432;Database=assets;Username=postgres;Password=postgres"
 
   coordinator-service:
     build:
@@ -61,13 +60,13 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      RabbitMq__Host:                            rabbitmq
-      RabbitMq__Username:                        guest
-      RabbitMq__Password:                        guest
-      Coordinator__DatabaseConnectionString:     "Host=postgres;Port=5432;Database=assets;Username=postgres;Password=postgres"
-      Coordinator__CalibrateCron:                "0 0 * * * ?"
-      Coordinator__DiagnosticCron:               "0 */15 * * * ?"
-      Coordinator__StaleReadingThresholdMins:    "30"
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Coordinator__DatabaseConnectionString: "Host=postgres;Port=5432;Database=assets;Username=postgres;Password=postgres"
+      Coordinator__CalibrateCron: "0 0 * * * ?"
+      Coordinator__DiagnosticCron: "0 */15 * * * ?"
+      Coordinator__StaleReadingThresholdMins: "30"
 
   asset-001:
     build:
@@ -78,10 +77,10 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      RabbitMq__Host:              rabbitmq
-      RabbitMq__Username:          guest
-      RabbitMq__Password:          guest
-      Asset__Id:                   asset-001
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Asset__Id: asset-001
       Asset__ReportingIntervalSecs: "10"
 
   asset-002:
@@ -93,10 +92,10 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      RabbitMq__Host:              rabbitmq
-      RabbitMq__Username:          guest
-      RabbitMq__Password:          guest
-      Asset__Id:                   asset-002
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Asset__Id: asset-002
       Asset__ReportingIntervalSecs: "10"
 
   asset-003:
@@ -108,10 +107,10 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      RabbitMq__Host:              rabbitmq
-      RabbitMq__Username:          guest
-      RabbitMq__Password:          guest
-      Asset__Id:                   asset-003
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Asset__Id: asset-003
       Asset__ReportingIntervalSecs: "10"
 
 volumes:
