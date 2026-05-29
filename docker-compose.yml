@@ -1,0 +1,119 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # management UI → http://localhost:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB:       assets
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ingestion-service:
+    build:
+      context: .
+      dockerfile: IngestionService/Dockerfile
+    container_name: ingestion-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RabbitMq__Host:                    rabbitmq
+      RabbitMq__Username:                guest
+      RabbitMq__Password:                guest
+      Database__ConnectionString:        "Host=postgres;Port=5432;Database=assets;Username=postgres;Password=postgres"
+
+  coordinator-service:
+    build:
+      context: .
+      dockerfile: CoordinatorService/Dockerfile
+    container_name: coordinator-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RabbitMq__Host:                            rabbitmq
+      RabbitMq__Username:                        guest
+      RabbitMq__Password:                        guest
+      Coordinator__DatabaseConnectionString:     "Host=postgres;Port=5432;Database=assets;Username=postgres;Password=postgres"
+      Coordinator__CalibrateCron:                "0 0 * * * ?"
+      Coordinator__DiagnosticCron:               "0 */15 * * * ?"
+      Coordinator__StaleReadingThresholdMins:    "30"
+
+  asset-001:
+    build:
+      context: .
+      dockerfile: AssetService/Dockerfile
+    container_name: asset-001
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RabbitMq__Host:              rabbitmq
+      RabbitMq__Username:          guest
+      RabbitMq__Password:          guest
+      Asset__Id:                   asset-001
+      Asset__ReportingIntervalSecs: "10"
+
+  asset-002:
+    build:
+      context: .
+      dockerfile: AssetService/Dockerfile
+    container_name: asset-002
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RabbitMq__Host:              rabbitmq
+      RabbitMq__Username:          guest
+      RabbitMq__Password:          guest
+      Asset__Id:                   asset-002
+      Asset__ReportingIntervalSecs: "10"
+
+  asset-003:
+    build:
+      context: .
+      dockerfile: AssetService/Dockerfile
+    container_name: asset-003
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RabbitMq__Host:              rabbitmq
+      RabbitMq__Username:          guest
+      RabbitMq__Password:          guest
+      Asset__Id:                   asset-003
+      Asset__ReportingIntervalSecs: "10"
+
+volumes:
+  rabbitmq_data:
+  postgres_data:

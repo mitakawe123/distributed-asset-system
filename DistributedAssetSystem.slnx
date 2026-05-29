@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AssetService/AssetService.csproj" />
+    <Project Path="src/CoordinatorService/CoordinatorService.csproj" />
+    <Project Path="src/IngestionService/IngestionService.csproj" />
+    <Project Path="src/Shared.Contracts/Shared.Contracts.csproj" />
+  </Folder>
+</Solution>
